@@ -1,12 +1,17 @@
 {
-    "checks": [
+    "additional_checks": [
         {
-            "name": "Execute benchmarks on all supported PHP platforms",
+            "name": "Execute benchmarks on all supported PHP platforms for memory adapter",
             "job": {
                 "php": "*",
                 "dependencies": "latest",
-                "command": "./vendor/bin/phpbench run --revs=2 --iterations=2 --report=aggregate"
+                "command": "composer require laminas/laminas-cache-storage-adapter-memory && ./vendor/bin/phpbench run --revs=2 --iterations=2 --report=aggregate"
             }
+        }
+    ],
+    "exclude": [
+        {
+            "name": "PHPBench"
         }
     ]
 }
