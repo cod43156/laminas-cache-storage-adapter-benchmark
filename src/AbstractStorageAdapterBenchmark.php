@@ -14,36 +14,36 @@ use function array_keys;
  */
 abstract class AbstractStorageAdapterBenchmark
 {
-    /** @var StorageInterface */
-    protected $storage;
-
     /**
      * Key-Value-Pairs of existing items
      *
-     * @var array<string,int>
+     * @var non-empty-array<non-empty-string,int>
      */
-    protected $warmItems = [];
+    protected array $warmItems;
 
     /**
      * Key-Value-Pairs of missing items
      *
-     * @var array<string,int>
+     * @var non-empty-array<non-empty-string,int>
      */
-    protected $coldItems = [];
+    protected array $coldItems;
 
-    public function __construct(StorageInterface $storage)
+    public function __construct(protected StorageInterface $storage)
     {
-        $this->storage = $storage;
-
         // generate warm items
+        $warmItems = [];
         for ($i = 0; $i < 10; $i++) {
-            $this->warmItems['warm' . $i] = $i;
+            $warmItems['warm' . $i] = $i;
         }
+        $this->warmItems = $warmItems;
 
         // generate cold items
+        $coldItems = [];
         for ($i = 0; $i < 10; $i++) {
-            $this->coldItems['cold' . $i] = $i;
+            $coldItems['cold' . $i] = $i;
         }
+
+        $this->coldItems = $coldItems;
     }
 
     public function setUp(): void
@@ -281,77 +281,5 @@ abstract class AbstractStorageAdapterBenchmark
     public function benchRemoveExistingItemsBulk(): void
     {
         $this->storage->removeItems(array_keys($this->warmItems));
-    }
-
-    /**
-     * Increment missing items with single operations
-     */
-    public function benchIncrementMissingItemsSingle(): void
-    {
-        foreach ($this->coldItems as $k => $v) {
-            $this->storage->incrementItem($k, $v);
-        }
-    }
-
-    /**
-     * Increment missing items at once
-     */
-    public function benchIncrementMissingItemsBulk(): void
-    {
-        $this->storage->incrementItems($this->coldItems);
-    }
-
-    /**
-     * Increment exisint items with single operations
-     */
-    public function benchIncrementExistingItemsSingle(): void
-    {
-        foreach ($this->warmItems as $k => $v) {
-            $this->storage->incrementItem($k, $v);
-        }
-    }
-
-    /**
-     * Increment existing items at once
-     */
-    public function benchIncrementExistingItemsBulk(): void
-    {
-        $this->storage->incrementItems($this->warmItems);
-    }
-
-    /**
-     * Decrement missing items with single operations
-     */
-    public function benchDecrementMissingItemsSingle(): void
-    {
-        foreach ($this->coldItems as $k => $v) {
-            $this->storage->decrementItem($k, $v);
-        }
-    }
-
-    /**
-     * Decrement missing items at once
-     */
-    public function benchDecrementMissingItemsBulk(): void
-    {
-        $this->storage->decrementItems($this->coldItems);
-    }
-
-    /**
-     * Decrement exisint items with single operations
-     */
-    public function benchDecrementExistingItemsSingle(): void
-    {
-        foreach ($this->warmItems as $k => $v) {
-            $this->storage->decrementItem($k, $v);
-        }
-    }
-
-    /**
-     * Decrement existing items at once
-     */
-    public function benchDecrementExistingItemsBulk(): void
-    {
-        $this->storage->decrementItems($this->warmItems);
     }
 }
