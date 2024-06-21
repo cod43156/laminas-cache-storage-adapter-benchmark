@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Laminas\Cache\Storage\Adapter\Benchmark;
 
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
 use Laminas\Cache\Storage\StorageInterface;
+use PhpBench\Attributes\AfterMethods;
+use PhpBench\Attributes\BeforeMethods;
 
 use function array_keys;
 
 /**
- * @BeforeMethods({"setUp"})
- * @AfterMethods({"tearDown"})
+ * @template TOptions of AdapterOptions
  */
+#[BeforeMethods('setUp')]
+#[AfterMethods('tearDown')]
 abstract class AbstractStorageAdapterBenchmark
 {
     /**
@@ -28,6 +32,9 @@ abstract class AbstractStorageAdapterBenchmark
      */
     protected array $coldItems;
 
+    /**
+     * @param StorageInterface<TOptions> $storage
+     */
     public function __construct(protected StorageInterface $storage)
     {
         // generate warm items
